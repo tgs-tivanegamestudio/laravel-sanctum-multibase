@@ -3,68 +3,53 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\User;
-use Illuminate\Http\Response;
-
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
-
-    public function register (Request $request){
-
-        $fields = $request->validate([
-            'name' =>  'required|string',
+    public function register(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string',
             'email' => 'required|string|unique:users,email',
             'password' => 'required|string|confirmed'
         ]);
 
-        $user = User::create([
-            'name' => $fields['name'],
-            'email' => $fields['email'],
-            'password' => \bcrypt($fields['password']) 
-        ]);
-
-        $token = $user->createToken('savagerytoken')->plainTextToken;
-
-        $response = [
-            'user' => $user,
-            'token' => $token
-        ];
-
-        return \response($response, 201);
-    }
-
-    public function login (Request $request){
-
-        $fields = $request->validate([
-            'email' => 'required|string',
-            'password' => 'required|string'
-        ]);
-
-        $user = User::where('email', $fields['email'])->first();
-
-        if(!$user || !\Hash::check($fields['password'], $user->password)){
-            return response([
-                'message' => 'Unrecognized Credentials'
-            ], 401);
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 400);
         }
 
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password)
+        ]);
+
         $token = $user->createToken('savagerytoken')->plainTextToken;
 
-        $response = [
-            'user' => $user,
-            'token' => $token
-        ];
-
-        return \response($response, 201);
+        return response()->json(['user' => $user, 'token' => $token], 201);
     }
 
-    public function logout(Request $request){
-        
-        auth()->user()->tokens()->delete();
+    public function login(Request $request)
+    {
+        $credentials = $request->only('email', 'password');
 
-        return [
-            'message' => 'Session ended'
-        ];
+        if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+            $token = $user->createToken('savagerytoken')->plainTextToken;
+
+            return response()->json(['user' => $user, 'token' => $token], 200);
+        }
+
+        return response()->json(['message' => 'Invalid credentials'], 401);
+    }
+
+    public function logout(Request $request)
+    {
+        $request->user()->tokens()->delete();
+
+        return response()->json(['message' => 'Logged out successfully'], 200);
     }
 }
