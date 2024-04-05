@@ -63,6 +63,34 @@ return [
             ]) : [],
         ],
 
+        'school_1' => [
+            'driver' => 'mysql',
+            'host' => env('DB_SCHOOL_1_HOST', '127.0.0.1'),
+            'port' => env('DB_SCHOOL_1_PORT', '3306'),
+            'database' => env('DB_SCHOOL_1_DATABASE', 'school_1'),
+            'username' => env('DB_SCHOOL_1_USERNAME', 'root'),
+            'password' => env('DB_SCHOOL_1_PASSWORD', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => true,
+            'engine' => null,
+        ],
+
+        'school_2' => [
+            'driver' => 'mysql',
+            'host' => env('DB_SCHOOL_2_HOST', '127.0.0.1'),
+            'port' => env('DB_SCHOOL_2_PORT', '3306'),
+            'database' => env('DB_SCHOOL_2_DATABASE', 'school_2'),
+            'username' => env('DB_SCHOOL_2_USERNAME', 'root'),
+            'password' => env('DB_SCHOOL_2_PASSWORD', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => true,
+            'engine' => null,
+        ],
+
         'pgsql' => [
             'driver' => 'pgsql',
             'url' => env('DATABASE_URL'),
